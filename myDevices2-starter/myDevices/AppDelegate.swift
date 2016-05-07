@@ -65,10 +65,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       device.deviceType = i % 3 == 0 ? "Watch" : "iPhone"
     }
 
-    let bob = NSManagedObject(entity: personEntity, insertIntoManagedObjectContext: managedObjectContext)
-    bob.setValue("Bob", forKey: "name")
-    let jane = NSManagedObject(entity: personEntity, insertIntoManagedObjectContext: managedObjectContext)
-    jane.setValue("Jane", forKey: "name")
+    let bob = Person(entity: personEntity, insertIntoManagedObjectContext: managedObjectContext)
+    bob.name = "Bob"
+    let jane = Person(entity: personEntity, insertIntoManagedObjectContext: managedObjectContext)
+    jane.name = "Jane"
 
     saveContext()
   }

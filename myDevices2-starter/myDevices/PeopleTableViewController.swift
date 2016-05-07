@@ -25,21 +25,51 @@ import CoreData
 
 class PeopleTableViewController: UITableViewController {
   var managedObjectContext: NSManagedObjectContext!
-  var people = [NSManagedObject]()
+  var people = [Person]()
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
-
-    title = "People"
-
-    reloadData()
-  }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        title = "People"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(PeopleTableViewController.addPerson(_:)))
+        
+        reloadData()
+    }
+    func addPerson(sender: AnyObject?) {
+        let alert = UIAlertController(title: "New Person", message: "Add new person", preferredStyle: .Alert)
+        let saveAction = UIAlertAction(title: "Save", style: .Default) { (UIAlertAction) in
+            let textfield = alert.textFields?.first
+            let name = textfield?.text
+            guard let personEntity = NSEntityDescription.entityForName("Person", inManagedObjectContext: self.managedObjectContext)  else {
+                fatalError("Could not find entity descriptions!")
+            }
+            
+            let person = Person(entity: personEntity, insertIntoManagedObjectContext: self.managedObjectContext)
+            person.name = name!
+            
+            do {
+                try self.managedObjectContext.save()
+            }catch {
+                print ("Error")
+            }
+            self.people.append(person)
+            self.tableView.reloadData()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Default) { (UIAlertAction) in
+        }
+        alert.addTextFieldWithConfigurationHandler({ (UITextField) in
+            alert.addAction(saveAction)
+            alert.addAction(cancelAction)
+        })
+        
+        presentViewController(alert, animated: true, completion: nil)
+    }
 
   func reloadData() {
     let fetchRequest = NSFetchRequest(entityName: "Person")
 
     do {
-      if let results = try managedObjectContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
+      if let results = try managedObjectContext.executeFetchRequest(fetchRequest) as? [Person] {
         people = results
       }
     } catch {
@@ -63,9 +93,7 @@ class PeopleTableViewController: UITableViewController {
     let cell = tableView.dequeueReusableCellWithIdentifier("PersonCell", forIndexPath: indexPath)
 
     let person = people[indexPath.row]
-    if let name = person.valueForKey("name") as? String {
-      cell.textLabel?.text = name
-    }
+     cell.textLabel?.text = person.name
 
     return cell
   }

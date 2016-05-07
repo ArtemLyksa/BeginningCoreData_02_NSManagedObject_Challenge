@@ -68,8 +68,8 @@ class DevicesTableViewController: UITableViewController {
 
     let device = devices[indexPath.row]
     
-    cell.textLabel?.text = device.name
-    cell.detailTextLabel?.text = device.deviceType
+    cell.textLabel?.text = device.deviceDesription;
+    cell.detailTextLabel?.text = ""
     
     return cell
   }
